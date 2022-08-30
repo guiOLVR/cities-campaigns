@@ -21,5 +21,5 @@ use Illuminate\Http\Request;
 
 
 Route::resource('/cities', 'CitiesController');
-
 Route::resource('/groups', 'GroupsController');
+Route::resource('/campaigns', 'CampaignsController');

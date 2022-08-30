@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\City;
+use App\Campaign;
 use App\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class GroupsController extends Controller
+class CampaignsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +17,9 @@ class GroupsController extends Controller
     public function index()
     {
         try {
-            $group = Group::with('cities')->get();
-            
-            return $group;
+            $campaigns = Campaign::with('group')->get();
+
+            return $campaigns;
         } catch (\Exception $e) {
             return $e;
         }
@@ -49,30 +49,26 @@ class GroupsController extends Controller
             $description = empty($description) ?: null;
             $name = trim($request->name);
 
-            $group = Group::where('name', $request->name)->exists();
+            $campaign = Campaign::where('name', $request->name)->exists();
 
-            if ($group) {
-                throw new \Exception('Este grupo já existe!');
+            if ($campaign) {
+                throw new \Exception('Esta campanha já existe!');
             }
 
-            $createGroup = new Group;
+            $createCampaign = new Campaign();
 
-            $createGroup->name = $name;
+            $createCampaign->name = $name;
 
-            $createGroup->description = $description;
+            $createCampaign->description = trim($description);
 
-            $createGroup->save();
+            $createCampaign->save();
 
-            $cities = City::whereIn('id', $request->cities)->get();
-
-            foreach ($cities as $city) {
-                $city->group_id  = $createGroup->id;
-                $city->save();
-            }
+            $group = Group::find($request->group_id);
+            $group->campaign_id  = $createCampaign->id;
+            $group->save();
 
             DB::commit();
             return response('Grupo criado com sucesso.', 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return $e;
@@ -88,9 +84,9 @@ class GroupsController extends Controller
     public function show($id)
     {
         try {
-            $group = Group::with('cities')->find($id);
+            $campaign = Campaign::with('group')->find($id);
 
-            return $group;
+            return $campaign;
         } catch (\Exception $e) {
             return $e;
         }
@@ -118,34 +114,29 @@ class GroupsController extends Controller
     {
         DB::beginTransaction();
         try {
-            $group = Group::with('cities')->find($id);
+            $campaign = Campaign::with('group')->find($id);
 
             if ($request->name) {
-                $group->name = trim($request->name);
+                $campaign->name = trim($request->name);
             }
 
             if ($request->description) {
-                $group->description = trim($request->description);
+                $campaign->description = trim($request->description);
             }
 
-            $group->save();
+            if ($request->group_id) {
+                $campaign->group->campaign_id = null;
+                $campaign->group->save();
 
-            $cities = City::whereIn('id', $request->cities)->get();
-
-            if (!$request->insert) {
-                foreach ($cities as $city) {
-                    $city->group_id  = null;
-                    $city->save();
-                }
-            } else {
-                foreach ($cities as $city) {
-                    $city->group_id  = $group->id;
-                    $city->save();
-                }
+                $addToAnotherGroup = Group::find($request->group_id);
+                $addToAnotherGroup->campaign_id = $id;
+                $addToAnotherGroup->save();
             }
+
+            $campaign->save();
 
             DB::commit();
-            return response('Grupo alterado com sucesso.', 200);
+            return response('Campanha alterada com sucesso.', 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return $e;
@@ -162,19 +153,15 @@ class GroupsController extends Controller
     {
         DB::beginTransaction();
         try {
-            $cities = City::where('group_id', $id)->get();
+            $campaign = Campaign::with('group')->find($id);
+            
+            $campaign->group->campaign_id = null;
+            $campaign->group->save();
 
-            foreach ($cities as $city) {
-                $city->group_id  = null;
-                $city->save();
-            }
-
-            $group = Group::find($id);
-
-            $group->delete();
+            $campaign->delete();
 
             DB::commit();
-            return response('Grupo deletado com sucesso.', 200);
+            return response('Campanha deletada com sucesso.', 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return $e;
