@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\CitiesController;
-use App\Http\Controllers\GroupsController;
 use Illuminate\Http\Request;
 
 /*
@@ -24,3 +22,4 @@ Route::resource('/cities', 'CitiesController');
 Route::resource('/groups', 'GroupsController');
 Route::resource('/campaigns', 'CampaignsController');
 Route::resource('/products', 'ProductsController');
+Route::resource('/product_discounts', 'ProductDiscountsController');
