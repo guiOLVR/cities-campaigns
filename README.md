@@ -1,3 +1,3 @@
-# Travellist - Laravel Demo App
+# Citties Campaing - Laravel API
 
-This is a Laravel 6 demo application to support our Laravel guides.
+This is a Laravel demo API.

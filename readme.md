@@ -2,6 +2,4 @@
 
 This is a Laravel demo API.
 
-Relevant Tutorials:
-
 
