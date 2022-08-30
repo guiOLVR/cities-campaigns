@@ -15,7 +15,13 @@ class CitiesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $cities = Cities::all();
+            
+            return $cities;
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 
     /**
