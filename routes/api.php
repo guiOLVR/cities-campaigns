@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CitiesController;
+use App\Http\Controllers\GroupsController;
 use Illuminate\Http\Request;
 
 /*
@@ -20,3 +21,5 @@ use Illuminate\Http\Request;
 
 
 Route::resource('/cities', 'CitiesController');
+
+Route::resource('/groups', 'GroupsController');

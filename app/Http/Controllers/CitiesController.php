@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Cities;
+use App\City;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\TryCatch;
 
 class CitiesController extends Controller
 {
@@ -16,7 +15,7 @@ class CitiesController extends Controller
     public function index()
     {
         try {
-            $cities = Cities::all();
+            $cities = City::all();
             
             return $cities;
         } catch (\Exception $e) {
@@ -44,7 +43,7 @@ class CitiesController extends Controller
     {
         try {
             if ($request->name) {
-                $cities = new Cities();
+                $cities = new City();
 
                 $cities->name = $request->name;
                 $cities->save();
@@ -66,7 +65,7 @@ class CitiesController extends Controller
     {
         try {
             if ($id) {
-                $cities = Cities::find($id);
+                $cities = City::find($id);
                 
                 return $cities;
             };
@@ -96,7 +95,7 @@ class CitiesController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $cities = Cities::find($id);
+            $cities = City::find($id);
             $cities->name = $request->name;
             $cities->save(); 
 
@@ -116,7 +115,7 @@ class CitiesController extends Controller
     {
         try {
             if ($id) {
-                Cities::find($id)->delete();
+                City::find($id)->delete();
 
                 return response('Cidade deletada com sucesso.', 200);
             };
